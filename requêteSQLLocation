@@ -1,0 +1,23 @@
+SELECT A.address,A.city, A.postal_code, A.latitude, A.longitude, C.first_name, C.last_name, COUNT(*) AS total_location
+FROM
+    payment P
+        INNER JOIN customer C
+            ON P.customer_id = C.customer_id
+        INNER JOIN address A
+            ON C.address_id = A.address_id
+GROUP BY A.address,A.city, A.postal_code, A.latitude, A.longitude, C.first_name, C.last_name
+HAVING COUNT(*) >= ALL (
+    SELECT COUNT(*)
+    FROM payment
+    GROUP BY customer_id
+)
+
+
+Résultat de la requete : 
+
+Adresse : 17 IMP DES JARDINS VALLEIRY 74520
+Latitude : 0
+Longitude : 0
+Prenom : ELEANOR
+Nom : HUNT
+Nombre de location : 46
