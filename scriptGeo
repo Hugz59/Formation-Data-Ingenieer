@@ -40,6 +40,8 @@ while ($donnees = $reponse->fetch(PDO::FETCH_ASSOC))
                 else {
                     $data = json_decode($data);
                     var_dump($data[0]);
+                    $lat = var_dump($data[0]['lat']);
+                    $lon = var_dump($data[0]['lon']);
                 }
                 curl_close($curl); 
                 
