@@ -14,45 +14,37 @@ $reponse = $bdd->query('SELECT DISTINCT address, city, postal_code FROM address'
 while ($donnees = $reponse->fetch(PDO::FETCH_ASSOC))
 {
     echo '<tr>';
-    if( isset($donnees['address']) && isset($donnees['city']) && isset($donnees['postal_code']) ){
- 
-        $donnees2 = str_replace(' ', '+',$donnees['address']). '+' .str_replace(' ', '+',$donnees['city']).'+' .$donnees['postal_code'].'+France';
- 
-        echo $donnees2;
- 
-            for($i = 0; $i < 1; ++$i) {
-                $curl= curl_init('https://nominatim.openstreetmap.org/search?q='.$donnees2.'&format=json');
- 
-                curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 6.1; fr; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13');
- 
-                curl_setopt($curl, CURLOPT_CAINFO, 'D:\wamp\www\\cacert.pem');
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
- 
-                curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                    'Content-Type: application/json',
-                    'Accept: application/json'
-                ));
-                $data = curl_exec($curl); 
- 
-                if($data === false){
-                    var_dump(curl_error($curl));
-                }
-                else {
-                    $data = json_decode($data);
-                    var_dump($data[0]);
-                    $lat = var_dump($data[0]['lat']);
-                    $lon = var_dump($data[0]['lon']);
-                }
-                curl_close($curl); 
-                
-                $update = $bdd->query('UPDATE address SET latitude='.$lat.', lon='.$lon.');
-                $update->fetch(PDO::FETCH_ASSOC));
-            }
-    }
     
-    else
-    {
+ 
+   $donnees2 = str_replace(' ', '+',$donnees['address']). '+' .str_replace(' ', '+',$donnees['city']).'+' .$donnees['postal_code'].'+France';
+ 
+ 
+           
+    $curl= curl_init('https://nominatim.openstreetmap.org/search?q='.$donnees2.'&format=json');
+ 
+    curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 6.1; fr; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13');
+
+    curl_setopt($curl, CURLOPT_CAINFO, 'D:\wamp\www\\cacert.pem');
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+ 
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json',
+        'Accept: application/json'
+    ));
+    $data = curl_exec($curl); 
+ 
+    if($data === false){
+        var_dump(curl_error($curl));
     }
- 
- 
+    else {
+        $data = json_decode($data, true);                  
+        $lat = var_export($data[0]['lat']);
+        $lon = var_export($data[0]['lon']);
+            
+              
+        $sql = 'UPDATE address SET latitude=?, longitude=?';
+        $stmt= $bdd->prepare($sql);
+        $stmt->execute([$lat, $lon]);
+    }
+    curl_close($curl); 
  }
