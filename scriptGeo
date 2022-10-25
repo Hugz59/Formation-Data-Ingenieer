@@ -46,6 +46,7 @@ while ($donnees = $reponse->fetch(PDO::FETCH_ASSOC))
                 curl_close($curl); 
                 
                 $update = $bdd->query('UPDATE address SET latitude='.$lat.', lon='.$lon.');
+                $update->fetch(PDO::FETCH_ASSOC));
             }
     }
     
