@@ -49,6 +49,8 @@ while ($donnees = $reponse->fetch(PDO::FETCH_ASSOC)) # Tant qu'il y a des valeur
         $sql = 'UPDATE address SET latitude=?, longitude=?'; # Mise à jour de la BDD avec les valeurs lat et lon (Pour le moment la requête ne fonctionne pas)
         $stmt= $bdd->prepare($sql);
         $stmt->execute([$lat, $lon]);
+        
+        # var_dump($stmt->errorInfo());
     }
     curl_close($curl);  
  }
