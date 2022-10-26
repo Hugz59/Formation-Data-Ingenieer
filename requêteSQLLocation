@@ -16,8 +16,8 @@ HAVING COUNT(*) >= ALL (
 Résultat de la requete : 
 
 Adresse : 17 IMP DES JARDINS VALLEIRY 74520
-Latitude : 0
-Longitude : 0
+Latitude : 46.1068512
+Longitude : 5.9663385
 Prenom : ELEANOR
 Nom : HUNT
 Nombre de location : 46
