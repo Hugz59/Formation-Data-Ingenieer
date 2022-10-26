@@ -12,15 +12,15 @@ try {
 
 # Récupération des données concernant l'adresse des clients.
 
-$reponse = $bdd->query('SELECT DISTINCT address, city, postal_code FROM address');
+$reponse = $bdd->query('SELECT DISTINCT address, city, postal_code, address_id FROM address');
  
 while ($donnees = $reponse->fetch(PDO::FETCH_ASSOC)) # Tant qu'il y a des valeurs dans le tableau, continuer. 
 {
     
     
-   # Récupération des données sous forme d'une seule chaine de caractère et formatée pour l'api
-   $donnees2 = str_replace(' ', '+',$donnees['address']). '+' .str_replace(' ', '+',$donnees['city']).'+' .$donnees['postal_code'].'+France';
- 
+    # Récupération des données sous forme d'une seule chaine de caractère et formatée pour l'api
+    $donnees2 = str_replace(' ', '+',$donnees['address']). '+' .str_replace(' ', '+',$donnees['city']).'+' .$donnees['postal_code'].'+France';
+    $address_id = $donnees['address_id']; 
  
     # Appel de l'API en y incluant la variable des données       
     $curl= curl_init('https://nominatim.openstreetmap.org/search?q='.$donnees2.'&format=json');
@@ -42,13 +42,13 @@ while ($donnees = $reponse->fetch(PDO::FETCH_ASSOC)) # Tant qu'il y a des valeur
     }
     else {
         $data = json_decode($data, true);      # Décode du JSON retourné par l'API            
-        $lat = var_export($data[0]['lat']);    # Export de la valeur lat sous forme de chaine de caractères
-        $lon = var_export($data[0]['lon']);    # Export de la valeur lon sous forme de chaine de caractères
+        $lat = var_export($data[0]['lat'], true);    # Export de la valeur lat sous forme de chaine de caractères
+        $lon = var_export($data[0]['lon'], true);    # Export de la valeur lon sous forme de chaine de caractères
             
               
-        $sql = 'UPDATE address SET latitude=?, longitude=?'; # Mise à jour de la BDD avec les valeurs lat et lon (Pour le moment la requête ne fonctionne pas)
+        $sql = 'UPDATE address SET latitude=?, longitude=? WHERE address_id =?'; # Mise à jour de la BDD avec les valeurs lat et lon (Pour le moment la requête ne fonctionne pas)
         $result= $bdd->prepare($sql);
-        $result->execute([$lat, $lon]);
+        $result->execute([$lat, $lon, $address_id]);
         
         # var_dump($result->errorInfo());
     }
