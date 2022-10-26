@@ -1,5 +1,6 @@
 <?php
 
+# Connexion à la base de données
 
 try {
     $bdd = new PDO('mysql:host=localhost;dbname=dataengineer;charset=utf8', 'root', '');
@@ -9,42 +10,45 @@ try {
         die('Erreur : ' . $e->getMessage());
     }
 
+# Récupération des données concernant l'adresse des clients.
+
 $reponse = $bdd->query('SELECT DISTINCT address, city, postal_code FROM address');
  
-while ($donnees = $reponse->fetch(PDO::FETCH_ASSOC))
+while ($donnees = $reponse->fetch(PDO::FETCH_ASSOC)) # Tant qu'il y a des valeurs dans le tableau, continuer. 
 {
-    echo '<tr>';
     
- 
+    
+   # Récupération des données sous forme d'une seule chaine de caractère et formatée pour l'api
    $donnees2 = str_replace(' ', '+',$donnees['address']). '+' .str_replace(' ', '+',$donnees['city']).'+' .$donnees['postal_code'].'+France';
  
  
-           
+    # Appel de l'API en y incluant la variable des données       
     $curl= curl_init('https://nominatim.openstreetmap.org/search?q='.$donnees2.'&format=json');
- 
+    
+    # Mise en place d'un useragent 
     curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 6.1; fr; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13');
-
+    
+    # Utilisation d'un certificat SSL pour accéder à l'api
     curl_setopt($curl, CURLOPT_CAINFO, 'D:\wamp\www\\cacert.pem');
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
  
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-        'Content-Type: application/json',
-        'Accept: application/json'
     ));
+    
+    # Exécution de l'API
     $data = curl_exec($curl); 
  
     if($data === false){
         var_dump(curl_error($curl));
     }
     else {
-        $data = json_decode($data, true);                  
-        $lat = var_export($data[0]['lat']);
-        $lon = var_export($data[0]['lon']);
+        $data = json_decode($data, true);      # Décode du JSON retourné par l'API            
+        $lat = var_export($data[0]['lat']);    # Export de la valeur lat sous forme de chaine de caractères
+        $lon = var_export($data[0]['lon']);    # Export de la valeur lon sous forme de chaine de caractères
             
               
-        $sql = 'UPDATE address SET latitude=?, longitude=?';
+        $sql = 'UPDATE address SET latitude=?, longitude=?'; # Mise à jour de la BDD avec les valeurs lat et lon (Pour le moment la requête ne fonctionne pas)
         $stmt= $bdd->prepare($sql);
         $stmt->execute([$lat, $lon]);
     }
-    curl_close($curl); 
+    curl_close($curl);  
  }
