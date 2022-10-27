@@ -46,7 +46,7 @@ while ($donnees = $reponse->fetch(PDO::FETCH_ASSOC)) # Tant qu'il y a des valeur
         $lon = var_export($data[0]['lon'], true);    # Export de la valeur lon sous forme de chaine de caractères
             
               
-        $sql = 'UPDATE address SET latitude=?, longitude=? WHERE address_id =?'; # Mise à jour de la BDD avec les valeurs lat et lon (Pour le moment la requête ne fonctionne pas)
+        $sql = 'UPDATE address SET latitude=?, longitude=? WHERE address_id =?'; # Mise à jour de la BDD avec les valeurs lat et lon 
         $result= $bdd->prepare($sql);
         $result->execute([$lat, $lon, $address_id]);
         
